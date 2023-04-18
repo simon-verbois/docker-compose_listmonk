@@ -1,0 +1,29 @@
+version: "3,7"
+
+services:
+  listmonk_db:
+    image: postgres:13
+    container_name: listmonk_db
+    restart: unless-stopped
+    env_file: .env
+    networks:
+      - listmonk
+    volumes:
+      - "./data:/var/lib/postgresql/data:rw"
+
+  listmonk:
+    image: listmonk/listmonk:latest
+    container_name: listmonk
+    restart: unless-stopped
+    depends_on:
+      - listmonk_db
+    volumes:
+      - "./config.toml:/listmonk/config.toml:ro"
+      - "./uploads:/listmonk/uploads:rw"
+    networks:
+      - listmonk
+    ports:
+      - "10002:9000"
+
+networks:
+  listmonk:
